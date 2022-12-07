@@ -4,6 +4,7 @@ import { ROUTES } from '../constants';
 import {Home, Wallet , Notifications, Settings, Horloge} from '../screens';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+
 const Tab = createBottomTabNavigator();
 
 function BottomTabNavigator() {
