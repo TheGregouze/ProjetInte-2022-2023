@@ -11,7 +11,7 @@ const Home = () => {
         alignItems: 'center',
         backgroundColor: COLORS.bgColor,
       }}>
-      <Text>Home!</Text>
+      <Text>ttt</Text>
     </View>
   );
 };

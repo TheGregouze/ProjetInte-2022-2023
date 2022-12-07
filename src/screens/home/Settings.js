@@ -1,49 +1,99 @@
-import React from 'react';
-import {StyleSheet, Text, SafeAreaView, TouchableOpacity} from 'react-native';
-import {COLORS, ROUTES} from '../../constants';
+import React, {useState} from 'react';
+import {SafeAreaView,StyleSheet,Text,TouchableOpacity,View} from 'react-native';
+import {COLORS} from '../../constants'
+import AuthBLE from '../auth/AuthBLE';
 
-const Settings = ({navigation}) => {
+const Settings = () => {
+  const {
+    requestPermissions,
+    scanForPeripherals,
+    allDevices,
+    connectToDevice,
+    connectedDevice,
+    heartRate,
+    disconnectFromDevice,
+  } = AuthBLE();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const scanForDevices = () => {
+    requestPermissions(isGranted => {
+      if (isGranted) {
+        scanForPeripherals();
+      }
+    });
+  };
+
+  const hideModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const openModal = async () => {
+    scanForDevices();
+    setIsModalVisible(true);
+  };
+
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: COLORS.bgColor,
-      }}>
-      <Text>Settings</Text>
-
+    <SafeAreaView style={styles.container}>
+      <View style={styles.Wrapper}>
+        {connectedDevice ? (
+          <>
+           {/* devicePulse */}
+            <Text style={styles.Text}>Your Heart Rate Is:</Text>
+            {/* <Text style={styles.heartRateText}>{heartRate} bpm</Text> */}
+          </>
+        ) : (
+          <Text style={styles.Text}>
+            Connectez votre montre !
+          </Text>
+        )}
+      </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate(ROUTES.SETTINGS_DETAIL)}
-        style={styles.button}
-        activeOpacity={0.8}>
-        <Text style={styles.buttonText}>Go To Settings Detail</Text>
+        onPress={connectedDevice ? disconnectFromDevice : openModal}
+        style={styles.button}>
+        <Text style={styles.buttonText}>
+          {connectedDevice ? 'Disconnect' : 'Connect'}
+        </Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => navigation.navigate(ROUTES.LOGIN)}
-        style={styles.button}
-        activeOpacity={0.8}>
-        <Text style={styles.buttonText}>Log out</Text>
-      </TouchableOpacity>
+    {/* deviceModal */}
     </SafeAreaView>
   );
 };
+
 
 export default Settings;
 
 const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.primary,
-    padding: 17,
-    margin: 10,
-    borderRadius: 5,
-    fontSize: 18,
-    width: 180,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    marginHorizontal: 40,
+    // marginBottom: '80%',
+    borderRadius: 8,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.bgColor,
+  },
+  Wrapper: {
+    flex: 0, // 1
+    marginTop: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  Text: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginHorizontal: 20,
+    color: 'black',
+    // marginBottom: -400,
   },
 });
